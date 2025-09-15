@@ -1,0 +1,13 @@
+# Django core
+django
+djangorestframework
+
+# Database Connector
+psycopg2-binary
+
+# Environment & Settings Management
+python-decouple
+
+# Data Handling & Generation
+pandas
+Faker
