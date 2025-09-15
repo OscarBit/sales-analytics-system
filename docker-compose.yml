@@ -2,25 +2,42 @@ version: '3.8'
 
 services:
   web:
+    # Builds the image using the Dockerfile in the current directory
     build: .
+    # The command to run when the container starts
     command: python manage.py runserver 0.0.0.0:8000
+    # Links your local code directory to the container for live updates
     volumes:
       - .:/app
+    # Maps port 8000 on your machine to port 8000 in the container
     ports:
       - "8000:8000"
+    # Tells the container to read secrets from the .env file
     env_file:
       - .env
+    # Waits for the db service to be 'healthy' before starting
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
-    image: postgres:13-alpine
+    # The official PostgreSQL image we are using
+    image: postgres:14-alpine
+    # Persists the database data on your machine, even if the container is removed
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    # Initializes the database with these credentials on its first run
     environment:
       - POSTGRES_DB=sales_db
       - POSTGRES_USER=sales_user
-      - POSTGRES_PASSWORD=sales_password
+      - POSTGRES_PASSWORD=sales_analytics_test1
+    # Checks if the database is ready to accept connections before allowing web to start
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sales_user -d sales_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+# Defines the named volume for data persistence
 volumes:
   postgres_data:
