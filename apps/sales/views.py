@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import SaleFilter
 from .models import Product, Customer, Seller, Sale
 from .serializers import (
     ProductSerializer,
@@ -42,6 +44,9 @@ class SaleViewSet(viewsets.ReadOnlyModelViewSet):
     """
 
     serializer_class = SaleSerializer
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = SaleFilter
 
     def get_queryset(self):
         """
