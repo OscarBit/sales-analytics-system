@@ -36,6 +36,16 @@ services:
       timeout: 5s
       retries: 5
 
+  notebook:
+    image: jupyter/scipy-notebook:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/home/jovyan/work
+    # Ensures that JupyterLab starts instead of the classic notebook
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+
 # Defines the named volume for data persistence
 volumes:
   postgres_data:
