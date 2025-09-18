@@ -7,6 +7,6 @@ router.register(r"products", views.ProductViewSet, basename="product")
 router.register(r"customers", views.CustomerViewSet, basename="customer")
 router.register(r"sellers", views.SellerViewSet, basename="seller")
 router.register(r"sales", views.SaleViewSet, basename="sale")
-
+router.register(r"analytics", views.AnalyticsViewSet, basename="analytics")
 # The API URLs are now determined automatically by the router.
 urlpatterns = router.urls
