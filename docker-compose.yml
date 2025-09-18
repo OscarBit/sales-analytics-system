@@ -50,10 +50,11 @@ services:
     build:
       context: ./dashboard
       dockerfile: Dockerfile
-    # Mount the source code, but not node_modules
+    # Mount the entire project directory, but use an anonymous volume
+    # to keep the container's node_modules separate.
     volumes:
-      - ./dashboard/src:/usr/src/app/src
-      - ./dashboard/index.html:/usr/src/app/index.html
+      - ./dashboard:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - "5173:5173"
     # Ensure the server starts with the correct host to be accessible
