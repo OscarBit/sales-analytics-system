@@ -211,3 +211,7 @@ __marimo__/
 
 # dump data
 sales_data.csv
+
+# Frontend
+dashboard/node_modules/
+dashboard/dist/

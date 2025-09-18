@@ -46,6 +46,20 @@ services:
     environment:
       - JUPYTER_ENABLE_LAB=yes
 
+  frontend:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    # Mount the source code, but not node_modules
+    volumes:
+      - ./dashboard/src:/usr/src/app/src
+      - ./dashboard/index.html:/usr/src/app/index.html
+    ports:
+      - "5173:5173"
+    # Ensure the server starts with the correct host to be accessible
+    stdin_open: true
+    tty: true
+
 # Defines the named volume for data persistence
 volumes:
   postgres_data:
