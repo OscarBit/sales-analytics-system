@@ -83,6 +83,9 @@ class AnalyticsViewSet(ViewSet):
             .annotate(total_revenue=Sum("sale_amount"))
             .order_by("month")
         )
+        for item in data:
+            if item["month"]:
+                item["month"] = item["month"].strftime("%Y-%m-%d")
         return Response(data)
 
     @action(detail=False, methods=["get"])
@@ -90,12 +93,29 @@ class AnalyticsViewSet(ViewSet):
         """
         Calculates the total sales revenue for each product category.
         """
+        queryset = Sale.objects.all()
+
+        # --- Apply region filter ---
+        region = request.query_params.get("region")
+        if region:
+            queryset = queryset.filter(customer__region=region)
+
         data = (
-            Product.objects.values("category")
-            .annotate(total_revenue=Sum("sale__sale_amount"))
+            queryset.values("product__category")
+            .annotate(total_revenue=Sum("sale_amount"))
             .order_by("-total_revenue")
+            # Rename the key to be consistent
+            .values("product__category", "total_revenue")
         )
-        return Response(data)
+        return Response(
+            [
+                {
+                    "category": item["product__category"],
+                    "total_revenue": item["total_revenue"],
+                }
+                for item in data
+            ]
+        )
 
     @action(detail=False, methods=["get"])
     def top_sellers(self, request):
