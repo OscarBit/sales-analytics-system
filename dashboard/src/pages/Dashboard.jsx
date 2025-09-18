@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
+import DashboardFilters from '../components/DashboardFilters';
+import LineChart from '../components/LineChart';
+import BarChart from '../components/BarChart';
+import PieChart from '../components/PieChart';
+import MetricCard from '../components/MetricCard';
 import {
     getMonthlyRevenue,
     getCategoryRevenue,
     getTopSellers,
     getRegionSales,
-} from '../services/analyticsApi';
-
-import LineChart from '../components/LineChart';
-import BarChart from '../components/BarChart';
-import PieChart from '../components/PieChart';
-import MetricCard from '../components/MetricCard';
+} from '../services/AnalyticsApi';
 
 const Dashboard = () => {
     const [loading, setLoading] = useState(true);
@@ -18,14 +18,18 @@ const Dashboard = () => {
     const [categoryRevenueData, setCategoryRevenueData] = useState(null);
     const [topSellersData, setTopSellersData] = useState(null);
     const [regionSalesData, setRegionSalesData] = useState(null);
-
+    const [filters, setFilters] = useState({
+        start_date: '',
+        end_date: '',
+        region: '',
+    });
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             // Fetch all data in parallel for efficiency
             const [monthly, category, sellers, region] = await Promise.all([
-                getMonthlyRevenue(),
-                getCategoryRevenue(),
+                getMonthlyRevenue(filters),
+                getCategoryRevenue(filters),
                 getTopSellers(),
                 getRegionSales(),
             ]);
@@ -84,16 +88,22 @@ const Dashboard = () => {
 
             setLoading(false);
         };
-
         fetchData();
-    }, []);
+    }, [filters]);
 
+    const handleFilterChange = (filterName, value) => {
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            [filterName]: value,
+        }));
+    };
     if (loading) {
         return <div>Loading Dashboard...</div>;
     }
 
     return (
         <div className="dashboard-container">
+            <DashboardFilters filters={filters} onFilterChange={handleFilterChange} />
             <div className="metrics-grid">
                 <MetricCard title="Total Revenue" value={metrics.totalRevenue} />
                 {/* You can add more metric cards here */}

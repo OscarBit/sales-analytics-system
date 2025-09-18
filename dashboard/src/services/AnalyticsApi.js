@@ -11,7 +11,7 @@ const apiClient = axios.create({
  */
 export const getMonthlyRevenue = async () => {
     try {
-        const response = await apiClient.get('/monthly_revenue/');
+        const response = await apiClient.get('/monthly_revenue/', { params });
         return response.data;
     } catch (error) {
         console.error("Error fetching monthly revenue:", error);
@@ -25,7 +25,7 @@ export const getMonthlyRevenue = async () => {
  */
 export const getCategoryRevenue = async () => {
     try {
-        const response = await apiClient.get('/category_revenue/');
+        const response = await apiClient.get('/category_revenue/', { params });
         return response.data;
     } catch (error) {
         console.error("Error fetching category revenue:", error);
