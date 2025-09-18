@@ -27,6 +27,9 @@ This project is a full-stack web application designed to analyze and visualize s
 ---
 
 ## Installation & Execution
+## 🚀 Running the Project on your Machine
+
+Because this project is fully containerized with Docker, setting it up on a new computer is simple and reliable. The Docker environment handles all dependencies, so you don't need to install Python, Node.js, or PostgreSQL locally.
 
 ### Prerequisites
 
@@ -71,6 +74,17 @@ This project is a full-stack web application designed to analyze and visualize s
     * **Backend API (Django):** [http://localhost:8000/api/](http://localhost:8000/api/)
     * **Data Analysis (JupyterLab):** [http://localhost:8888/](http://localhost:8888/)
         * *(Note: You'll need to get the access token from the Jupyter container's logs: `docker-compose logs notebook`)*
+
+
+### 💡 Tips & Troubleshooting
+
+* **"Unable to Connect" Error?** This usually means a container isn't running. Check the status of all services with `docker-compose ps`. If a service has `Exited`, check its specific logs for an error message, e.g., `docker-compose logs frontend`.
+
+* **Need a Fresh Start?** To completely stop and reset the entire application, including deleting the database data, run `docker-compose down -v`. The `-v` flag is important as it removes the database volume, ensuring a perfectly clean start on your next `docker-compose up`.
+
+* **JupyterLab Access Token:** To log in to JupyterLab for the first time, you'll need a security token. You can find it by checking the logs of the notebook service: `docker-compose logs notebook`.
+
+* **No Local `npm` or `python` Needed:** Remember that you don't need to install any programming languages on your computer. To run commands inside a container, use `docker-compose exec <service_name> <command>`.
 
 ---
 
