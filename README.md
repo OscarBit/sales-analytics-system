@@ -1,99 +1,145 @@
+# Sales Analysis System
 
-# Sales Analysis System - Technical Test
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-311/)
+[![Django Version](https://img.shields.io/badge/django-4.2-green.svg)](https://www.djangoproject.com/)
+[![React Version](https://img.shields.io/badge/react-18.2-blue.svg)](https://reactjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project is a full-stack web application designed to analyze and visualize sales data. It features a Django backend with a REST API, a PostgreSQL database, a data analysis environment with Jupyter, and a dynamic React frontend dashboard. The entire application is containerized using Docker for easy setup and consistent deployment.
-
----
-
-## Features
-
-* **Containerized Environment:** The entire stack (Backend, Frontend, Database, Analysis) runs in Docker containers for seamless setup.
-* **REST API:** A robust API built with Django REST Framework provides paginated and filterable access to the sales data.
-* **Optimized Analytics Endpoints:** Dedicated, pre-aggregated API endpoints for high-performance dashboard loading.
-* **Bulk Data Ingestion:** An optimized custom Django command to load large CSV datasets (300,000+ rows) efficiently.
-* **Data Analysis Notebook:** A JupyterLab environment for exploratory data analysis and visualization.
-* **Interactive React Dashboard:** A dynamic frontend built with React and Vite, featuring several charts and interactive filters (by date and region).
+Este proyecto es una aplicación web full-stack diseñada para analizar y visualizar datos de ventas. Cuenta con un backend de Django que expone una API REST, una base de datos PostgreSQL, un entorno de análisis de datos con JupyterLab y un dashboard dinámico en React. Toda la aplicación está contenedorizada con Docker para facilitar su configuración y despliegue.
 
 ---
 
-## Technology Stack
+## 🏛️ Arquitectura del Sistema
 
-* **Backend:** Django, Django REST Framework
-* **Frontend:** React, Vite, Chart.js, Axios
-* **Database:** PostgreSQL
-* **Containerization:** Docker, Docker Compose
-* **Data Analysis:** JupyterLab, Pandas, Matplotlib, Seaborn
+El sistema está diseñado con una arquitectura de microservicios desacoplada, orquestada por Docker Compose. Esto permite que cada componente funcione de manera independiente, facilitando el desarrollo, la escalabilidad y el mantenimiento.
+
+```mermaid
+graph TD
+    subgraph "Usuario"
+        U[<fa:fa-user> Usuario]
+    end
+
+    subgraph "Navegador"
+        U -- Accede a --> F
+        F[<fa:fa-react> Frontend React<br>localhost:5173]
+    end
+    
+    subgraph "Servicios Backend (Docker)"
+        F -- Peticiones API (Axios) --> W
+        W[<fa:fa-django> Backend Django/DRF<br>localhost:8000]
+        W -- Consultas SQL --> DB
+        DB[(<fa:fa-database> PostgreSQL DB)]
+        
+        J[<fa:fa-python> JupyterLab<br>localhost:8888]
+        J -- Análisis Ad-hoc --> DB
+    end
+
+    style F fill:#20232A,stroke:#61DAFB,color:#FFF
+    style W fill:#092E20,stroke:#44B78B,color:#FFF
+    style J fill:#F37626,stroke:#FFF,color:#000
+    style DB fill:#336791,stroke:#FFF,color:#FFF
+    style U fill:#FFF,stroke:#000,color:#000
+```
+
+*   **Frontend:** Una Single-Page Application (SPA) construida con React que consume los datos de la API y los presenta en un dashboard interactivo.
+*   **Backend:** Una API REST construida con Django y Django REST Framework que gestiona la lógica de negocio y las interacciones con la base de datos.
+*   **Base de Datos:** Una instancia de PostgreSQL que sirve como el almacén de datos persistente para la aplicación.
+*   **Análisis de Datos:** Un entorno de JupyterLab para la exploración y análisis de datos ad-hoc directamente contra la base de datos.
 
 ---
 
-## Installation & Execution
-## 🚀 Running the Project on your Machine
+## 🛠️ Stack Tecnológico
 
-Because this project is fully containerized with Docker, setting it up on a new computer is simple and reliable. The Docker environment handles all dependencies, so you don't need to install Python, Node.js, or PostgreSQL locally.
+*   **Backend:** Django, Django REST Framework
+*   **Frontend:** React, Vite, Chart.js, Axios
+*   **Base de Datos:** PostgreSQL
+*   **Contenerización:** Docker, Docker Compose
+*   **Análisis de Datos:** JupyterLab, Pandas
+*   **Calidad de Código:** `pre-commit`, Black, Ruff
 
-### Prerequisites
+---
 
-* [Docker](https://www.docker.com/products/docker-desktop/)
-* [Docker Compose](https://docs.docker.com/compose/install/)
+## 🚀 Guía de Inicio Rápido (Local)
 
-### Step-by-Step Instructions
+Sigue estos pasos para levantar el entorno de desarrollo completo en tu máquina local.
 
-1.  **Clone the Repository:**
+### Prerrequisitos
+
+*   [Docker](https://www.docker.com/products/docker-desktop/)
+*   [Docker Compose](https://docs.docker.com/compose/install/) (generalmente incluido con Docker Desktop)
+
+### Pasos de Instalación
+
+1.  **Clonar el Repositorio**
     ```bash
-    git clone <your-repository-url>
-    cd sales_analysis_system
+    git clone https://github.com/tu-usuario/sales-analytics-system.git
+    cd sales-analytics-system
     ```
 
-2.  **Set Up Environment Variables:**
-    Copy the example environment file and fill in your unique `SECRET_KEY`. You can generate one easily online.
+2.  **Configurar el Entorno**
+    Copia el archivo de ejemplo `.env.example` a un nuevo archivo `.env`. Este archivo es ignorado por Git para proteger tus secretos.
     ```bash
     cp env.example .env
     ```
-    *Now, open the `.env` file and add your secret key.*
+    Abre el archivo `.env` y asegúrate de que todas las variables estén configuradas, especialmente `SECRET_KEY`. Puedes generar una clave secreta fuerte [aquí](https://djecrety.ir/).
 
-3.  **Build and Run the Containers:**
-    This command will build the images and start all services (Django, React, PostgreSQL, Jupyter) in the background.
+3.  **Levantar los Servicios**
+    Este comando construirá las imágenes de Docker (si no existen) y iniciará todos los contenedores en segundo plano (`-d`).
     ```bash
     docker-compose up -d --build
     ```
 
-4.  **Generate Sample Data:**
-    Run the provided script to generate the `sales_data.csv` file (Note: this file is not committed to Git).
+4.  **Preparar la Base de Datos**
+    Ejecuta las migraciones de Django para crear las tablas en la base de datos PostgreSQL.
     ```bash
-    python generate_sales_data.py
+    docker-compose exec web python manage.py migrate
     ```
 
-5.  **Load Data into the Database:**
-    Execute the custom Django command to load the 300,000 sales records into the database.
+5.  **Cargar Datos de Prueba (Opcional pero Recomendado)**
+    a. Genera un archivo CSV con 300,000 registros de ventas de prueba:
+    ```bash
+    docker-compose exec web python generate_sales_data.py
+    ```
+    b. Carga los datos del CSV a la base de datos usando el comando personalizado de Django:
     ```bash
     docker-compose exec web python manage.py load_sales_data
     ```
 
-6.  **Access the Applications:**
-    * **Web Dashboard (React):** [http://localhost:5173/](http://localhost:5173/)
-    * **Backend API (Django):** [http://localhost:8000/api/](http://localhost:8000/api/)
-    * **Data Analysis (JupyterLab):** [http://localhost:8888/](http://localhost:8888/)
-        * *(Note: You'll need to get the access token from the Jupyter container's logs: `docker-compose logs notebook`)*
+### Acceso a los Servicios
 
+Una vez que todos los contenedores estén en funcionamiento, puedes acceder a los servicios en las siguientes URLs:
 
-### 💡 Tips & Troubleshooting
-
-* **"Unable to Connect" Error?** This usually means a container isn't running. Check the status of all services with `docker-compose ps`. If a service has `Exited`, check its specific logs for an error message, e.g., `docker-compose logs frontend`.
-
-* **Need a Fresh Start?** To completely stop and reset the entire application, including deleting the database data, run `docker-compose down -v`. The `-v` flag is important as it removes the database volume, ensuring a perfectly clean start on your next `docker-compose up`.
-
-* **JupyterLab Access Token:** To log in to JupyterLab for the first time, you'll need a security token. You can find it by checking the logs of the notebook service: `docker-compose logs notebook`.
-
-* **No Local `npm` or `python` Needed:** Remember that you don't need to install any programming languages on your computer. To run commands inside a container, use `docker-compose exec <service_name> <command>`.
+*   🌐 **Dashboard Web (React):** [http://localhost:5173](http://localhost:5173)
+*   ⚙️ **API Backend (Django):** [http://localhost:8000/api/](http://localhost:8000/api/)
+*   🔬 **Análisis de Datos (JupyterLab):** [http://localhost:8888](http://localhost:8888)
+    *   **Nota:** Para acceder a JupyterLab por primera vez, necesitarás un token. Obtenlo ejecutando: `docker-compose logs notebook` y busca una URL que contenga `?token=...`.
 
 ---
 
-## Key Technical Decisions
+## ☁️ Guía de Despliegue a Producción
 
-* **Fully Containerized Development:** Using Docker for all services ensures a consistent, isolated, and easily reproducible environment, eliminating "it works on my machine" issues.
-* **Dedicated Analytics API:** Instead of fetching raw data, the backend provides pre-aggregated endpoints (`/api/analytics/...`). This shifts the heavy computational load to the server, resulting in a significantly faster and more responsive frontend dashboard.
-* **Optimized Data Ingestion:** The `load_sales_data` command uses `pandas` chunking and Django's `bulk_create` to efficiently load a large dataset without overwhelming the server's memory.
-* **Containerized Frontend with Vite:** The React development environment is also containerized, removing the need for local Node.js/npm installation. Vite was chosen for its modern architecture and extremely fast development server.
-* **Separation of Concerns:** The project is clearly divided into a backend API, a frontend UI, and a data analysis notebook, each serving a distinct purpose.
+Desplegar esta aplicación en un entorno de producción requiere consideraciones adicionales de seguridad, rendimiento y escalabilidad.
+
+### Estrategia General
+
+1.  **Imágenes Optimizadas:** Utilizar `Dockerfile` multi-etapa para crear imágenes ligeras y seguras, sin herramientas de desarrollo.
+2.  **Servidor WSGI:** Usar un servidor WSGI de producción como Gunicorn o uWSGI en lugar del servidor de desarrollo de Django.
+3.  **Variables de Entorno Seguras:** Gestionar los secretos (como `SECRET_KEY` y credenciales de la base de datos) a través del sistema de gestión de secretos del proveedor de la nube (ej. AWS Secrets Manager, Heroku Config Vars).
+4.  **Base de Datos Gestionada:** Utilizar un servicio de base de datos gestionado (como Amazon RDS, Google Cloud SQL o Heroku Postgres) en lugar de un contenedor de Docker para la base de datos.
+5.  **Servir Archivos Estáticos:** Configurar un servicio de almacenamiento de objetos como AWS S3 para servir los archivos estáticos del backend de Django.
+6.  **CORS Restringido:** Configurar `django-cors-headers` para permitir peticiones únicamente desde el dominio del frontend de producción.
+
+### Ejemplo de Plataformas de Despliegue
+
+*   **IaaS (Infrastructure as a Service):** Desplegar los contenedores en una máquina virtual en proveedores como **DigitalOcean**, **AWS EC2** o **Vultr**, gestionando la red y la seguridad manualmente.
+*   **PaaS (Platform as a Service):** Utilizar plataformas como **Heroku**, **Render** o **AWS Elastic Beanstalk** que abstraen gran parte de la infraestructura, permitiendo un despliegue más rápido gestionado a través de `git push` o conectando el repositorio.
 
 ---
+
+## ✨ Futuras Mejoras
+
+*   **Autenticación de Usuarios:** Implementar un sistema de autenticación basado en tokens (JWT) para proteger la API y el dashboard.
+*   **Actualizaciones en Tiempo Real:** Integrar WebSockets (usando Django Channels) para que los gráficos del dashboard se actualicen en tiempo real a medida que llegan nuevos datos.
+*   **Sistema de Caching:** Implementar un sistema de caché con Redis para los endpoints de la API que son computacionalmente costosos, reduciendo la carga en la base de datos.
+*   **Cobertura de Pruebas:** Ampliar el conjunto de pruebas unitarias y de integración para asegurar la fiabilidad del código.
+*   **Exportación de Datos:** Añadir funcionalidades al frontend para permitir a los usuarios exportar los datos de los gráficos a formatos como CSV o PNG.
